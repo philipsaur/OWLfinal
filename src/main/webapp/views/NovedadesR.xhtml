@@ -1,0 +1,121 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Novedades - Podemos Ser Grandes</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+       <h:outputStylesheet library="css" name="style.css" />
+</h:head>
+
+<h:body class="novedades">
+        <div id="top">
+            <ui:insert name="top">
+                    <h:form>
+                        <p:menubar model="">
+                            <f:facet name="options">
+                                <p:commandButton actionListener="#{cerrarController.cerrarSesion()}" icon="ui-icon-locked" action="/index?faces-redirect=true" title="Cerrar Sesión"/> 
+                            </f:facet>
+                        </p:menubar>
+                    </h:form>
+                </ui:insert>
+            </div>
+    <h:form>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <h:commandLink styleClass="navbar-brand special-brand" action="OWLInicioR.xhtml">Podemos Ser Grandes</h:commandLink>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <h:commandLink styleClass="nav-link" action="OWLInicioR.xhtml">Inicio</h:commandLink>
+                    </li>
+                    <li class="nav-item">
+                        <h:commandLink styleClass="nav-link" action="emailR.xhtml">Envío de Correos</h:commandLink>
+                    </li>
+                    <li class="nav-item">
+                        <h:commandLink styleClass="nav-link" action="DonacionesR.xhtml">Donaciones</h:commandLink>
+                    </li>
+                    <li class="nav-item">
+                        <h:commandLink styleClass="nav-link" action="ActividadesR.xhtml">Actividades</h:commandLink>
+                    </li>
+                    <li class="nav-item">
+                        <h:commandLink styleClass="nav-link" action="IncapacidadR.xhtml">Incapacidad</h:commandLink>
+                    </li>
+                    <li class="nav-item">
+                        <h:commandLink styleClass="nav-link" action="InscripcionR.xhtml">Inscripciones</h:commandLink>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </h:form>
+
+    <div class="container mt-5">
+            <h1 class="text-center mb-4">Novedades</h1>
+
+           <p:growl id="msj"/>
+        <h:form id="Nuevo">
+            <p:fieldset legend="Nuevo ingreso de Novedades" toggleable="false">
+                <p:panelGrid columns="1">
+                    <p:commandButton value="Nuevo" oncomplete="PF('mostrar').show();"/>
+                </p:panelGrid>
+            </p:fieldset>
+        </h:form>
+        <p:dialog widgetVar="mostrar" header="Datos" modal="true" showEffect="clip" resizable="false">
+            <p:ajax event="close" listener="#{novedadesController.limpiar()}" update=":valor"/>
+
+            <h:form id="valor">
+                    <h:panelGrid columns="2">
+            <p:outputLabel value="Fecha"/>
+            <p:calendar value="#{novedadesController.novedades.fecha}"/>
+
+            <p:outputLabel value="Tipo de Novedad"/>
+            <p:inputText value="#{novedadesController.novedades.tiponovedad}"/>
+
+            <p:commandButton value="Guardar" actionListener="#{novedadesController.guardar()}"
+                             rendered="#{novedadesController.novedades.idempleado == 0}"
+                             update=":valor :msj" oncomplete="PF('mostrar').hide();"/>
+
+            <p:commandButton value="Actualizar" actionListener="#{novedadesController.actualizar()}"
+                             rendered="#{novedadesController.novedades.idempleado != 0}"
+                             update=":valor :msj" oncomplete="PF('mostrar').hide();"/>
+        </h:panelGrid>
+            </h:form>
+    </p:dialog>
+                <h:form id="Datos">
+        <h:commandLink>
+            <h:graphicImage url="/resources/images/export/pdf.png" width="24"/>
+                    <p:dataExporter type="pdf" target="tabla" fileName="Incapacidadpdf"/>
+                </h:commandLink>
+                <h:commandLink>
+                    <h:graphicImage url="/resources/images/export/excel.png" width="24"/>
+                    <p:dataExporter type="xls" target="tabla" fileName="Incapacidadsexcel"/>
+                </h:commandLink>
+                    <p:dataTable id="tabla" value="#{novedadesController.listanovedad}" var="i">
+                    <p:column headerText="Tipo de novedad">
+                        <h:outputText value="#{i.tiponovedad}"/>
+                    </p:column>
+                        <p:column headerText="Fecha de novedad">
+                            <h:outputText value="#{i.fecha}">
+                            <f:convertDateTime pattern="YYYY-MM-dd"/>
+                        </h:outputText>
+                    </p:column>
+                        <p:column headerText="Eliminar" exportable="false">
+                        <p:commandButton value="Eliminar" actionListener="#{novedadesController.eliminar(i)}"
+                                         update="Datos :msj"/>
+                    </p:column>
+                        <p:column headerText="Editar" exportable="false">
+                        <p:commandButton value="Editar" actionListener="#{novedadesController.cargarID(i)}"
+                                         oncomplete="PF('mostrar').show();" update=":valor"/>
+                    </p:column>
+                </p:dataTable>
+                </h:form>
+    </div>
+</h:body>
+</html>

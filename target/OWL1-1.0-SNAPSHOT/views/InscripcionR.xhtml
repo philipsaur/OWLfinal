@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<h:head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inscripcion - Podemos Ser Grandes</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+       <h:outputStylesheet library="css" name="style.css" />
+</h:head>
+
+<h:body class="inventarios">
+        <div id="top">
+            <ui:insert name="top">
+                    <h:form>
+                        <p:menubar model="">
+                            <f:facet name="options">
+                                <p:commandButton actionListener="#{cerrarController.cerrarSesion()}" icon="ui-icon-locked" action="/index?faces-redirect=true" title="Cerrar Sesión"/> 
+                            </f:facet>
+                        </p:menubar>
+                    </h:form>
+                </ui:insert>
+            </div>
+    <h:form>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <h:commandLink styleClass="navbar-brand special-brand" action="OWLInicioR.xhtml">Podemos Ser Grandes</h:commandLink>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <h:commandLink styleClass="nav-link" action="OWLInicioR.xhtml">Inicio</h:commandLink>
+                    </li>
+                    <li class="nav-item">
+                        <h:commandLink styleClass="nav-link" action="NovedadesR.xhtml">Novedades</h:commandLink>
+                    </li>
+                    <li class="nav-item">
+                        <h:commandLink styleClass="nav-link" action="emailR.xhtml">Envío de Correos</h:commandLink>
+                    </li>
+                    <li class="nav-item">
+                        <h:commandLink styleClass="nav-link" action="DonacionesR.xhtml">Donaciones</h:commandLink>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </h:form>
+
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Inscripción</h1>
+        <p:growl id="msj"/>
+        <h:form id="Nuevo">
+            <p:fieldset legend="Nuevo ingreso de inscripciones" toggleable="false">
+                <p:panelGrid columns="1">
+                    <p:commandButton value="Nuevo" oncomplete="PF('mostrar').show();"/>
+                </p:panelGrid>
+            </p:fieldset>
+        </h:form>
+        <p:dialog widgetVar="mostrar" header="Datos" modal="true" showEffect="clip" resizable="false">
+            <p:ajax event="close" listener="#{inscripcionController.limpiar()}" update=":valor"/>
+            <h:form id="valor">
+                <p:panelGrid columns="2">
+                    <p:outputLabel value="Ingrese el número de documento"/>
+                    <p:inputText value="#{inscripcionController.inscripcion.numerodocumento}"/> 
+                    <p:outputLabel value="Ingrese el nombre"/>
+                    <p:inputText value="#{inscripcionController.inscripcion.nombre}"/> 
+                    <p:outputLabel value="Ingrese el apellido"/>
+                    <p:inputText value="#{inscripcionController.inscripcion.apellido}"/> 
+                    <p:outputLabel value="Ingrese la nacionalidad"/>
+                    <p:inputText value="#{inscripcionController.inscripcion.nacionalidad}"/> 
+                    <p:outputLabel value="Ingrese la fecha de nacimiento"/>
+                    <p:calendar  value="#{inscripcionController.inscripcion.fechanacimiento}"/>
+                    <p:outputLabel value="Id empleado"/>
+                    <p:selectOneMenu>
+                        <f:selectItems value="#{novedadesController.listanovedad}" var="li" itemLabel="#{li.tiponovedad}" itemValue="#{li.idempleado}"/>
+                    </p:selectOneMenu>
+                    
+                    
+                    <p:commandButton value="Guardar" actionListener="#{inscripcionController.guardar()}"
+                                     update=":Datos valor :msj" oncomplete="PF('mostrar').hide();"/>
+                    <p:commandButton value="Actualizar" actionListener="#{inventarioController.actualizar()}"
+                                     update=":Datos valor :msj" oncomplete="PF('mostrar').hide();"/>
+                </p:panelGrid>
+            </h:form>
+        </p:dialog>
+                <h:form id="Datos">
+        <h:commandLink>
+            <h:graphicImage url="/resources/images/export/pdf.png" width="24"/>
+                    <p:dataExporter type="pdf" target="tabla" fileName="Inventariospdf"/>
+                </h:commandLink>
+                <h:commandLink>
+                    <h:graphicImage url="/resources/images/export/excel.png" width="24"/>
+                    <p:dataExporter type="xls" target="tabla" fileName="Inventariosexcel"/>
+                </h:commandLink>
+                    <p:dataTable id="tabla" value="#{inscripcionController.listaInscripcion}" var="i">
+                    <p:column headerText="Numero de documento">
+                        <h:outputText value="#{i.numerodocumento}"/>
+                    </p:column>
+                        <p:column headerText="Nombre">
+                            <h:outputText value="#{i.nombre}"/>
+                    </p:column>
+                        <p:column headerText="Apellido">
+                            <h:outputText value="#{i.apellido}"/>
+                    </p:column>
+                        <p:column headerText="Nacionalidad">
+                            <h:outputText value="#{i.nacionalidad}"/>
+                    </p:column>
+                    <p:column headerText="Fecha de nacimiento">
+                        <h:outputText value="#{i.fechanacimiento}">
+                            <f:convertDateTime pattern="YYYY-MM-dd"/>
+                        </h:outputText>
+                    </p:column>
+                        <p:column headerText="Id Empleado">
+                            <h:outputText value="#{i.novedadesIdempleado.tiponovedad}"/>
+                    </p:column>
+                        <p:column headerText="Eliminar" exportable="false">
+                        <p:commandButton value="Eliminar" actionListener="#{inscripcionController.eliminar(i)}"
+                                         update="Datos :msj"/>
+                    </p:column>
+                        <p:column headerText="Editar" exportable="false">
+                        <p:commandButton value="Editar" actionListener="#{inscripcionController.cargarID(i)}"
+                                         oncomplete="PF('mostrar').show();" update=":valor"/>
+                    </p:column>
+                </p:dataTable>
+        </h:form>
+    </div>
+</h:body>
+</html>
